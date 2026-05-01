@@ -1,33 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Summary Result</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <div class="page-wrapper">
-        <div class="summary-card">
-            <h2 class="title">📄 Document Summary</h2>
-            
-            <!-- Added summary-box class here to use your white background & scrolling -->
-            <div class="summary-content summary-box">
-                <ul class="summary-list">
-                    {% for point in summary.split:"•" %}
-                        {% if point.strip %}
-                            <li>{{ point|strip }}</li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
-            </div>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summary Result</title>
 
-            <div class="button-group">
-                <a href="/" class="btn btn-secondary">⬅ Back</a>
-                <a href="/download/" class="btn btn-success">⬇ Download PDF</a>
-            </div>
-        </div>
-    </div>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background: linear-gradient(120deg, #0f0c29, #302b63, #24243e);
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.page-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.summary-card {
+    width: 100%;
+    max-width: 800px;
+    border-radius: 20px;
+    padding: 25px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px #00f2ff;
+}
+
+.summary-box {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 15px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.08);
+}
+
+.summary-list li {
+    margin-bottom: 8px;
+}
+
+.button-group {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.btn-glow {
+    background: linear-gradient(45deg, #00f2ff, #ff00c8);
+    border: none;
+}
+
+.btn-glow:hover {
+    box-shadow: 0 0 15px #00f2ff;
+}
+
+.action-group {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+</style>
+
+</head>
+
+<body class="text-light">
+
+<div class="page-wrapper">
+
+<div class="summary-card">
+
+<h2 class="title">📄 Document Summary</h2>
+
+<!-- SUMMARY -->
+<div class="summary-box" id="summaryText">
+    <ul class="summary-list">
+        {% for point in summary.split:"•" %}
+            {% if point.strip %}
+                <li>{{ point|strip }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- ACTION BUTTONS -->
+<div class="action-group">
+    <button class="btn btn-outline-light btn-sm" onclick="copyText()">Copy</button>
+    <button class="btn btn-outline-info btn-sm" onclick="downloadText()">Download TXT</button>
+    <button class="btn btn-outline-warning btn-sm" onclick="speakText()">Listen</button>
+    <button class="btn btn-outline-danger btn-sm" onclick="stopText()">Stop</button>
+</div>
+
+<!-- NAV BUTTONS -->
+<div class="button-group">
+    <a href="/" class="btn btn-secondary">⬅ Back</a>
+    <a href="/download/" class="btn btn-success">⬇ Download PDF</a>
+</div>
+
+</div>
+
+</div>
+
+<script>
+// Copy
+function copyText() {
+    let text = document.getElementById("summaryText").innerText;
+    navigator.clipboard.writeText(text);
+}
+
+// Download TXT
+function downloadText() {
+    let text = document.getElementById("summaryText").innerText;
+    let blob = new Blob([text], {type: "text/plain"});
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "summary.txt";
+    a.click();
+}
+
+// Speak
+function speakText() {
+    speechSynthesis.cancel();
+    let text = document.getElementById("summaryText").innerText;
+    let msg = new SpeechSynthesisUtterance(text);
+    speechSynthesis.speak(msg);
+}
+
+// Stop
+function stopText() {
+    speechSynthesis.cancel();
+}
+</script>
+
 </body>
 </html>
